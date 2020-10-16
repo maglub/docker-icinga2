@@ -36,6 +36,15 @@ func entrypoint() error {
 	if os.Getpid() == 1 {
 		logf(info, "Initializing /data as we're the init process (PID 1)")
 
+		{
+			cmd := exec.Command("/docker-chown")
+			cmd.Dir = "/data"
+
+			if errRn := cmd.Run(); errRn != nil {
+				return errRn
+			}
+		}
+
 		for _, dir := range []string{"etc", "var/cache", "var/lib", "var/log", "var/run", "var/spool"} {
 			dest := path.Join("/data", dir, "icinga2")
 			logf(info, "Checking %#v", dest)
